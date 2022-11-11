@@ -35,36 +35,43 @@ class Handler(object):
 
         if bis == True:
             self.bissecao(x_0,x_i,precisao,iter,func)
+        else:
+            Builder.get_object("resul_bis").set_text('')
+            Builder.get_object("pre_bis").set_text('')
+            Builder.get_object("n_iter_bis").set_text('')
         if pos == True:
-            self.posicao(x_0,x_i,precisao,iter,func)
+            self.posicao_falsa(x_0,x_i,precisao,iter,func)
+        else:
+            Builder.get_object("resul_pos_f").set_text('')
+            Builder.get_object("pre_pos_f").set_text('')
+            Builder.get_object("n_iter_pos_f").set_text('') 
         if nw == True:
             self.newton(x_0,x_i,precisao,iter,func)
+        else:
+            Builder.get_object("resul_nr").set_text('')
+            Builder.get_object("pre_nr").set_text('')
+            Builder.get_object("n_iter_nr").set_text('')
         if bir == True:
             self.birge(x_0,x_i,precisao,iter,func)
  
 
-
     def bissecao(self,a,b,c,d,f):
         x = symbols('x')
-        x0 = a
-        xi = b
-        pre = c
+        x0 = float(a)
+        xi = float(b)
+        pre = float(c)
         iter = d
         cont = 0
         func = f
 
-        print(pre)
-        print()
-        
         while (cont<iter):
 
-            xi_1 = float((x0 + xi) / 2)
-            x_teste = float(x0)
-            tx0 = self.teste_sinal(x_teste,func)
-            x_teste = float(xi)
-            txi = self.teste_sinal(x_teste,func)
-            x_teste = float(xi_1)
-            txi_1 = self.teste_sinal(x_teste,func)
+            xi_1 = (x0 + xi) / 2
+
+            tx0 = self.teste_sinal(x0,func)
+            txi = self.teste_sinal(xi,func)
+            txi_1 = self.teste_sinal(xi_1,func)
+
             if tx0 == txi_1:
                 x0 = xi_1
             if txi == txi_1:
@@ -81,11 +88,83 @@ class Handler(object):
 
         return None
     
-    def posicao(self,a,b,c,d,f):
-        pass
+    def posicao_falsa(self,a,b,c,d,f):
+
+        x = symbols('x')
+        x0 = float(a)
+        xi = float(b)
+        pre = float(c)
+        iter = d
+        func = f
+        cont = 0
+        
+        while (cont<iter):
+
+            fx0 = func.subs(x,x0)
+            tx0 = self.teste_sinal(x0,func)
+
+            fxi = func.subs(x,xi)
+            txi = self.teste_sinal(xi,func)
+
+            xi_1 = ((x0 * abs(fxi)) + (xi * abs(fx0)))/((abs(fx0)) + (abs(fxi)))
+            txi_1 = self.teste_sinal(xi_1,func)
+
+            print('tx0: ',tx0)
+            print('txi: ',txi)
+            print('txi_1: ',txi_1)
+            print('\n')
+
+            if abs(xi-x0) < pre:
+                print('Entrei')
+                break
+
+            if tx0 == txi_1:
+                x0 = xi_1
+            if txi == txi_1:
+                xi = xi_1
+
+            cont += 1
+
+            print('Valor de x0: ',x0)
+            print('Valor de xi: ',xi)
+            print('Valor de xi_1: ',xi_1)
+            print('\n')
+            
+
+        Builder.get_object("resul_pos_f").set_text(str(xi_1))
+        Builder.get_object("pre_pos_f").set_text(str(abs(xi-x0)))
+        Builder.get_object("n_iter_pos_f").set_text(str(cont))    
+
+        return None
 
     def newton(self,a,b,c,d,f):
-        pass
+        x = symbols('x')
+        xi = float(b)
+        pre = float(c)
+        iter = d
+        cont = 0
+        func = f
+
+        while (cont<iter):
+
+            f_xi = func.subs(x,xi)
+            fl_xi = diff(func,x)
+            fl_xi = fl_xi.subs(x,xi)
+
+            xi_1 = float(xi - (f_xi/fl_xi))
+
+            if abs((xi-xi_1)) < pre:
+                break
+
+            cont +=1
+            xi = xi_1
+
+
+        Builder.get_object("resul_nr").set_text(str(xi_1))
+        Builder.get_object("pre_nr").set_text(str(abs(xi-xi_1)))
+        Builder.get_object("n_iter_nr").set_text(str(cont))
+
+        return None
 
     def birge(self,a,b,c,d,f):
         pass
@@ -95,13 +174,14 @@ class Handler(object):
         
         x = symbols('x')
         f = func
+        x_t = x_teste
 
-        x_calc = f.subs(x,x_teste)
+        x_calc = f.subs(x,x_t)
 
         if x_calc > 0:
             return 0 
 
-        elif x_calc < 0:
+        if x_calc < 0:
             return 1
 
 
@@ -109,8 +189,6 @@ class Handler(object):
         pass
 
     def on_plotar_clicked(self, button):
-
-        
 
         x = symbols('x')
 
