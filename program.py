@@ -98,25 +98,17 @@ class Handler(object):
         func = f
         cont = 0
         
-        while (cont<iter):
+        while (abs(xi-x0)) > pre:
 
             fx0 = func.subs(x,x0)
-            tx0 = self.teste_sinal(x0,func)
+            tx0 = self.teste_sinal(fx0,func)
 
             fxi = func.subs(x,xi)
-            txi = self.teste_sinal(xi,func)
+            txi = self.teste_sinal(fxi,func)
 
-            xi_1 = ((x0 * abs(fxi)) + (xi * abs(fx0)))/((abs(fx0)) + (abs(fxi)))
-            txi_1 = self.teste_sinal(xi_1,func)
-
-            print('tx0: ',tx0)
-            print('txi: ',txi)
-            print('txi_1: ',txi_1)
-            print('\n')
-
-            if abs(xi-x0) < pre:
-                print('Entrei')
-                break
+            xi_1 = ((x0 * abs(fxi)) + (xi * abs(fx0))) / ((abs(fx0)) + (abs(fxi)))
+            fxi_1 = func.subs(x,xi_1)
+            txi_1 = self.teste_sinal(fxi_1,func)
 
             if tx0 == txi_1:
                 x0 = xi_1
@@ -124,6 +116,12 @@ class Handler(object):
                 xi = xi_1
 
             cont += 1
+
+            if cont==iter:
+
+                print('O método alcançou o limite de {} iterações'.format(pre))
+                print('O valor da raiz encontrada foi: {}'.format(xi_1))
+                break
 
             print('Valor de x0: ',x0)
             print('Valor de xi: ',xi)

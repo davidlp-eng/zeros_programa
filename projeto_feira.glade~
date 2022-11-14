@@ -640,7 +640,6 @@
                         <property name="margin-end">60</property>
                         <property name="margin-bottom">10</property>
                         <property name="draw-indicator">True</property>
-                        <signal name="clicked" handler="on_bisecao_clicked" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -658,7 +657,6 @@
                         <property name="margin-end">60</property>
                         <property name="margin-bottom">10</property>
                         <property name="draw-indicator">True</property>
-                        <signal name="clicked" handler="on_pos_falsa_clicked" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -676,7 +674,6 @@
                         <property name="margin-end">60</property>
                         <property name="margin-bottom">10</property>
                         <property name="draw-indicator">True</property>
-                        <signal name="clicked" handler="on_new_rap_clicked" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -693,7 +690,6 @@
                         <property name="margin-end">18</property>
                         <property name="margin-bottom">10</property>
                         <property name="draw-indicator">True</property>
-                        <signal name="clicked" handler="on_bier_juv_clicked" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
