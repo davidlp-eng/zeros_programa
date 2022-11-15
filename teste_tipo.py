@@ -1,30 +1,29 @@
 from sympy import *
-import numpy as np
 
+x = Symbol('x')
 
-#x = symbols('x')
+p1 = 2*x**3 - x + x**2
 
-#func = x**3
-func = input('Digite a funcao: ')
+print(p1)
 
-print("A função é: ",func)
-print(type(func))
+for i in range(100):
+    p1 = diff(p1,x)
 
-t = np.arange(0.0, 3.0, 0.001)
+if p1 == 0:
+    print('É um polinômio')
 
-s = t**3
+else:
+    print('Não é um polinômio')
 
-print("\nT = ",t)
-print(type(t))
-print("\ns = ",s)
-print(type(s))
+p1 = 2*x**3 - sin(x) + x**2
 
+print(p1)
 
-s = func.subs({'x': t}).evalf()
+for i in range(100):
+    p1 = diff(p1,x)
 
+if p1 == 0:
+    print('É um polinômio')
 
-#print("\nT = ",t)
-#print(type(t))
-print("\ns = ",s)
-print(type(s))
-
+else:
+    print('Não é um polinômio')
