@@ -1,5 +1,6 @@
 import gi
 from sympy import *
+import math
 
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
@@ -52,7 +53,24 @@ class Handler(object):
             Builder.get_object("pre_nr").set_text('')
             Builder.get_object("n_iter_nr").set_text('')
         if bir == True:
-            self.birge(x_0,x_i,precisao,iter,func)
+            i = 0
+            test_poly = func
+
+            for i in range(30):
+                test_poly = diff(test_poly,x)
+
+            if test_poly != 0:
+                print('Não é um polinômio')
+
+            else:
+                vet_func = Poly(func)
+                vet_func = vet_func.all_coeffs()
+                self.birge(x_0,x_i,precisao,iter,vet_func)
+        else:
+            Builder.get_object("resul_bier").set_text('')
+            Builder.get_object("pre_bier").set_text('')
+            Builder.get_object("n_iter_bier").set_text('')
+
  
 
     def bissecao(self,a,b,c,d,f):
@@ -98,17 +116,16 @@ class Handler(object):
         func = f
         cont = 0
         
-        while (abs(xi-x0)) > pre:
+        while (cont<iter):
 
             fx0 = func.subs(x,x0)
-            tx0 = self.teste_sinal(fx0,func)
+            tx0 = self.teste_sinal(x0,func)
 
             fxi = func.subs(x,xi)
-            txi = self.teste_sinal(fxi,func)
+            txi = self.teste_sinal(xi,func)
 
             xi_1 = ((x0 * abs(fxi)) + (xi * abs(fx0))) / ((abs(fx0)) + (abs(fxi)))
-            fxi_1 = func.subs(x,xi_1)
-            txi_1 = self.teste_sinal(fxi_1,func)
+            txi_1 = self.teste_sinal(xi_1,func)
 
             if tx0 == txi_1:
                 x0 = xi_1
@@ -117,7 +134,7 @@ class Handler(object):
 
             cont += 1
 
-            if cont==iter:
+            if abs((xi-x0)) < pre:
 
                 print('O método alcançou o limite de {} iterações'.format(pre))
                 print('O valor da raiz encontrada foi: {}'.format(xi_1))
@@ -126,6 +143,10 @@ class Handler(object):
             print('Valor de x0: ',x0)
             print('Valor de xi: ',xi)
             print('Valor de xi_1: ',xi_1)
+            print('\n')
+
+            print('Valor de x0: ',fx0)
+            print('Valor de xi: ',fxi)
             print('\n')
             
 
@@ -165,7 +186,56 @@ class Handler(object):
         return None
 
     def birge(self,a,b,c,d,f):
-        pass
+        
+        def divisao(vet_func, nt, x0):
+
+            b = np.zeros(nt)
+            c = np.zeros(nt-1)
+
+            cont = 0
+
+            for cont in range(nt):
+                if cont == 0:
+                    b[cont] = vet_func[cont]
+                else:
+                    b[cont] = vet_func[cont] + b[cont - 1] * x0
+                cont += 1
+                
+            cont = 0
+
+            for cont in range(nt-1):
+                if cont == 0:
+                    c[cont] = b[cont]
+                else:
+                    c[cont] = b[cont] + c[cont - 1] * x0
+                cont += 1
+            return ((b[nt-1]) / (c[nt-2]))
+            
+        pre = c
+        x0 = a
+        xi = 9999999999999999.99
+        iter = d
+        vet_func = f
+        nt = len(vet_func)
+
+        flag = 1  
+        cont = 0
+
+        while abs(xi-x0) > pre:
+            if flag == 0:
+                x0 = xi
+            Rr = divisao(vet_func, nt, x0)
+            xi = x0 - Rr
+
+            cont += 1
+            flag = 0
+
+            if cont == iter:
+                break
+
+        Builder.get_object("resul_bier").set_text(str(xi))
+        Builder.get_object("pre_bier").set_text(str(abs(xi-x0)))
+        Builder.get_object("n_iter_bier").set_text(str(cont))
 
 
     def teste_sinal(self, x_teste,func):
