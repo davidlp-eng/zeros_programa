@@ -683,7 +683,7 @@
                     </child>
                     <child>
                       <object class="GtkCheckButton" id="bier_juv">
-                        <property name="label" translatable="yes">Birge Juvieta (somente para polinômios)</property>
+                        <property name="label" translatable="yes">Birge Vieta (somente para polinômios)</property>
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
                         <property name="receives-default">False</property>
@@ -740,10 +740,10 @@ V(1.0)</property>
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="margin-start">10</property>
-                    <property name="margin-end">10</property>
-                    <property name="label" translatable="yes">	
+                    <property name="margin-end">11</property>
+                    <property name="label">	
 	- O objetivo do programa é calcular zeros de funções a partir dos métodos da Bisseção, Posição Falsa, Newton-Rapson
-e Birge Vieta para polinômios.
+e Birge Vieta para polinômios;
 
 	- X_0: Ponto anterior ao cruzamento da função no eixo x;
 
@@ -758,14 +758,17 @@ laço cessará;
 	
 	- Para a inserção de funções trigonométricas, usar nomeclatura em inglês, por exemplo, cos(x), sin(x), tan(x);
 
-	- É recomendado que no primeiro uso do aplicativo, seja feito o seguinte teste para validar o programa.
-	- Selecione os métodos da Bisseção, Posição Falsa e Newton Rapson.		  
+	- Selecione os métodos da Bisseção, Posição Falsa e Newton Rapson;
+
+	- Sempre utilizar "x" minúsculo para o termo da função;
+
+	- É recomendado que no primeiro uso do aplicativo, seja feito o seguinte teste para aprender o uso do programa;
 			    
-	- f(x) = x**2 - 3*x + 9 , X_0 = 2.5,  X_i = 3.5, precisão = 1e-5;
-			    
-			    
-	</property>
+	- f(x) = x**3 - 3*x + 9 , X_0 = 2.5,  X_i = 3.5, precisão = 1e-5;
+
+</property>
                     <attributes>
+                      <attribute name="font-desc" value="Arial 10"/>
                       <attribute name="weight" value="semibold"/>
                     </attributes>
                   </object>
@@ -898,6 +901,14 @@ laço cessará;
     <property name="title" translatable="yes">Gráfico - Feche essa janela para plotar novamente</property>
     <property name="transient-for">main_window</property>
     <signal name="destroy" handler="on_plot1_destroy" swapped="no"/>
+    <child>
+      <placeholder/>
+    </child>
+  </object>
+  <object class="GtkWindow" id="plot2">
+    <property name="can-focus">False</property>
+    <property name="title" translatable="yes">Gráfico de convergẽncia - Feche essa janela para plotar novamente</property>
+    <property name="transient-for">main_window</property>
     <child>
       <placeholder/>
     </child>

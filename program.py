@@ -10,6 +10,7 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_gtk3agg import (
     FigureCanvasGTK3Agg as FigureCanvas)
 import numpy as np
+#import matplotlib as plt
 
 class Handler(object):
     def __init__(self):
@@ -32,22 +33,26 @@ class Handler(object):
         bir = Builder.get_object("bier_juv").get_active()
         func = Builder.get_object("func").get_text()
         func = sympify(func)
+        bis_vet_resul = []
+        pf_vet_resul = []
+        nw_vet_resul = []
+        bir_vet_resul = []
 
 
         if bis == True:
-            self.bissecao(x_0,x_i,precisao,iter,func)
+            bis_vet_resul = self.bissecao(x_0,x_i,precisao,iter,func)
         else:
             Builder.get_object("resul_bis").set_text('')
             Builder.get_object("pre_bis").set_text('')
             Builder.get_object("n_iter_bis").set_text('')
         if pos == True:
-            self.posicao_falsa(x_0,x_i,precisao,iter,func)
+            pf_vet_resul = self.posicao_falsa(x_0,x_i,precisao,iter,func)
         else:
             Builder.get_object("resul_pos_f").set_text('')
             Builder.get_object("pre_pos_f").set_text('')
             Builder.get_object("n_iter_pos_f").set_text('') 
         if nw == True:
-            self.newton(x_0,x_i,precisao,iter,func)
+            nw_vet_resul = self.newton(x_0,x_i,precisao,iter,func)
         else:
             Builder.get_object("resul_nr").set_text('')
             Builder.get_object("pre_nr").set_text('')
@@ -60,17 +65,20 @@ class Handler(object):
                 test_poly = diff(test_poly,x)
 
             if test_poly != 0:
-                print('Não é um polinômio')
+                Builder.get_object("resul_bier").set_text('')
+                Builder.get_object("pre_bier").set_text('')
+                Builder.get_object("n_iter_bier").set_text('')
 
             else:
                 vet_func = Poly(func)
                 vet_func = vet_func.all_coeffs()
-                self.birge(x_0,x_i,precisao,iter,vet_func)
+                bir_vet_resul = self.birge(x_0,x_i,precisao,iter,vet_func)
         else:
             Builder.get_object("resul_bier").set_text('')
             Builder.get_object("pre_bier").set_text('')
             Builder.get_object("n_iter_bier").set_text('')
 
+        self.plotar_2(bis_vet_resul,pf_vet_resul,nw_vet_resul,bir_vet_resul)
  
 
     def bissecao(self,a,b,c,d,f):
@@ -81,11 +89,13 @@ class Handler(object):
         iter = d
         cont = 0
         func = f
+        bis_vet_resul = []
 
         while (cont<iter):
 
             xi_1 = (x0 + xi) / 2
-
+            bis_vet_resul.append(xi_1)
+            
             tx0 = self.teste_sinal(x0,func)
             txi = self.teste_sinal(xi,func)
             txi_1 = self.teste_sinal(xi_1,func)
@@ -104,7 +114,7 @@ class Handler(object):
         Builder.get_object("pre_bis").set_text(str(abs(xi-x0)))
         Builder.get_object("n_iter_bis").set_text(str(cont))
 
-        return None
+        return bis_vet_resul
     
     def posicao_falsa(self,a,b,c,d,f):
 
@@ -115,6 +125,7 @@ class Handler(object):
         iter = d
         func = f
         cont = 0
+        pf_vet_resul = []
         
         while (cont<iter):
 
@@ -125,6 +136,7 @@ class Handler(object):
             txi = self.teste_sinal(xi,func)
 
             xi_1 = ((x0 * abs(fxi)) + (xi * abs(fx0))) / ((abs(fx0)) + (abs(fxi)))
+            pf_vet_resul.append(xi_1)
             txi_1 = self.teste_sinal(xi_1,func)
 
             if tx0 == txi_1:
@@ -135,26 +147,13 @@ class Handler(object):
             cont += 1
 
             if abs((xi-x0)) < pre:
-
-                print('O método alcançou o limite de {} iterações'.format(pre))
-                print('O valor da raiz encontrada foi: {}'.format(xi_1))
                 break
-
-            print('Valor de x0: ',x0)
-            print('Valor de xi: ',xi)
-            print('Valor de xi_1: ',xi_1)
-            print('\n')
-
-            print('Valor de x0: ',fx0)
-            print('Valor de xi: ',fxi)
-            print('\n')
-            
 
         Builder.get_object("resul_pos_f").set_text(str(xi_1))
         Builder.get_object("pre_pos_f").set_text(str(abs(xi-x0)))
         Builder.get_object("n_iter_pos_f").set_text(str(cont))    
 
-        return None
+        return pf_vet_resul
 
     def newton(self,a,b,c,d,f):
         x = symbols('x')
@@ -163,6 +162,7 @@ class Handler(object):
         iter = d
         cont = 0
         func = f
+        nw_vet_resul = []
 
         while (cont<iter):
 
@@ -171,19 +171,19 @@ class Handler(object):
             fl_xi = fl_xi.subs(x,xi)
 
             xi_1 = float(xi - (f_xi/fl_xi))
+            cont +=1
+            nw_vet_resul.append(xi_1)
 
             if abs((xi-xi_1)) < pre:
                 break
 
-            cont +=1
             xi = xi_1
-
 
         Builder.get_object("resul_nr").set_text(str(xi_1))
         Builder.get_object("pre_nr").set_text(str(abs(xi-xi_1)))
         Builder.get_object("n_iter_nr").set_text(str(cont))
 
-        return None
+        return nw_vet_resul
 
     def birge(self,a,b,c,d,f):
         
@@ -217,15 +217,16 @@ class Handler(object):
         iter = d
         vet_func = f
         nt = len(vet_func)
-
         flag = 1  
         cont = 0
+        bir_vet_resul = []
 
         while abs(xi-x0) > pre:
             if flag == 0:
                 x0 = xi
             Rr = divisao(vet_func, nt, x0)
             xi = x0 - Rr
+            bir_vet_resul.append(xi)
 
             cont += 1
             flag = 0
@@ -236,6 +237,8 @@ class Handler(object):
         Builder.get_object("resul_bier").set_text(str(xi))
         Builder.get_object("pre_bier").set_text(str(abs(xi-x0)))
         Builder.get_object("n_iter_bier").set_text(str(cont))
+
+        return bir_vet_resul
 
 
     def teste_sinal(self, x_teste,func):
@@ -294,9 +297,41 @@ class Handler(object):
         canvas = FigureCanvas(figure)  
         canvas.set_size_request(800, 600)
         sw.add(canvas)
+        sw.show_all()      
+
+    def plotar_2(self,a,b,c,d):
+        bis = a
+        pf = b
+        nw = c
+        bir = d
+
+        sw = Builder.get_object("plot2")
+
+        figure = Figure(figsize=(8, 8), dpi=71)
+
+        x_val = np.arange(0, len(bis), 1)
+        axs = figure.add_subplot(2,2,1) #.title.set_text('Bisseccao')
+        axs.plot(x_val,bis)
+
+        x_val = np.arange(0, len(pf), 1)
+        axs = figure.add_subplot(2,2,2) #.title.set_text('Posicao Falsa')
+        axs.plot(x_val,pf)
+
+        x_val = np.arange(0, len(nw), 1)
+        axs = figure.add_subplot(2,2,3) #.title.set_text('Newton Raphson')
+        axs.plot(x_val,nw)
+
+        x_val = np.arange(0, len(bir), 1)
+        axs = figure.add_subplot(2,2,4) #.title.set_text('Bierge Vieta')
+        axs.plot(x_val,bir)
 
 
-        sw.show_all()        
+        canvas = FigureCanvas(figure)  
+        canvas.set_size_request(800, 600)
+        sw.add(canvas)
+        sw.show_all()  
+
+
  
 
 Builder = Gtk.Builder()
