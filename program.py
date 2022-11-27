@@ -19,66 +19,95 @@ class Handler(object):
     def on_main_window_detroy(self, Window):
         Gtk.main_quit()
 
+    def aviso_mensagem(self, titulo, texto, icone):
+        aviso: Gtk.MessageDialog = Builder.get_object("aviso")
+        aviso.props.text = titulo
+        aviso.props.secondary_text = texto
+        aviso.props.icon_name = icone
+        aviso.show_all()
+        aviso.run()
+        aviso.hide()
+
+
     def on_calcular_clicked(self, Button):
         x = symbols('x')
+
+        erro = 0
 
 
         x_0 = sympify(Builder.get_object("x0_value").get_text())
         x_i = sympify(Builder.get_object("xi_value").get_text())
+
+        if (x_0 > x_i):
+            self.aviso_mensagem('Valor incorreto de intervalo','O valor de x_0 (valor anterior a raiz), necessariamente deve ser menor que x_1','dialog-error')
+            erro = 1
+
         precisao = sympify(Builder.get_object("ep").get_text())
+
+        if (precisao >= 1):
+            self.aviso_mensagem('Valor incorreto de precisão !','O valor dado a precisão necessariamente deve ser menor que 1','dialog-error')
+            erro = 1
+
         iter = sympify(Builder.get_object("iter").get_text())
+
+        if (iter < 1):
+            self.aviso_mensagem('Valor incorreto de iteração !','O valor dado a iteração necessariamente deve ser maior que 1','dialog-error')
+            erro = 1
+
         bis = Builder.get_object("bisecao").get_active()
         pos = Builder.get_object("pos_falsa").get_active()
         nw = Builder.get_object("new_rap").get_active()
         bir = Builder.get_object("bier_juv").get_active()
-        func = Builder.get_object("func").get_text()
-        func = sympify(func)
+        func = sympify(Builder.get_object("func").get_text())
+
         bis_vet_resul = []
         pf_vet_resul = []
         nw_vet_resul = []
         bir_vet_resul = []
 
+        if erro != 1:
 
-        if bis == True:
-            bis_vet_resul = self.bissecao(x_0,x_i,precisao,iter,func)
-        else:
-            Builder.get_object("resul_bis").set_text('')
-            Builder.get_object("pre_bis").set_text('')
-            Builder.get_object("n_iter_bis").set_text('')
-        if pos == True:
-            pf_vet_resul = self.posicao_falsa(x_0,x_i,precisao,iter,func)
-        else:
-            Builder.get_object("resul_pos_f").set_text('')
-            Builder.get_object("pre_pos_f").set_text('')
-            Builder.get_object("n_iter_pos_f").set_text('') 
-        if nw == True:
-            nw_vet_resul = self.newton(x_0,x_i,precisao,iter,func)
-        else:
-            Builder.get_object("resul_nr").set_text('')
-            Builder.get_object("pre_nr").set_text('')
-            Builder.get_object("n_iter_nr").set_text('')
-        if bir == True:
-            i = 0
-            test_poly = func
+            if bis == True:
+                bis_vet_resul = self.bissecao(x_0,x_i,precisao,iter,func)
+            else:
+                Builder.get_object("resul_bis").set_text('')
+                Builder.get_object("pre_bis").set_text('')
+                Builder.get_object("n_iter_bis").set_text('')
+            if pos == True:
+                pf_vet_resul = self.posicao_falsa(x_0,x_i,precisao,iter,func)
+            else:
+                Builder.get_object("resul_pos_f").set_text('')
+                Builder.get_object("pre_pos_f").set_text('')
+                Builder.get_object("n_iter_pos_f").set_text('') 
+            if nw == True:
+                nw_vet_resul = self.newton(x_0,x_i,precisao,iter,func)
+            else:
+                Builder.get_object("resul_nr").set_text('')
+                Builder.get_object("pre_nr").set_text('')
+                Builder.get_object("n_iter_nr").set_text('')
+            if bir == True:
+                i = 0
+                test_poly = func
 
-            for i in range(30):
-                test_poly = diff(test_poly,x)
+                for i in range(30):
+                    test_poly = diff(test_poly,x)
 
-            if test_poly != 0:
+                if test_poly != 0:
+                    Builder.get_object("resul_bier").set_text('')
+                    Builder.get_object("pre_bier").set_text('')
+                    Builder.get_object("n_iter_bier").set_text('')
+                    self.aviso_mensagem('A sua função não é um polinômio !','Para utilizar o método Birge Vieta sua função necessariamente deve ser polinomial','dialog-error')
+
+                else:
+                    vet_func = Poly(func)
+                    vet_func = vet_func.all_coeffs()
+                    bir_vet_resul = self.birge(x_0,x_i,precisao,iter,vet_func)
+            else:
                 Builder.get_object("resul_bier").set_text('')
                 Builder.get_object("pre_bier").set_text('')
                 Builder.get_object("n_iter_bier").set_text('')
 
-            else:
-                vet_func = Poly(func)
-                vet_func = vet_func.all_coeffs()
-                bir_vet_resul = self.birge(x_0,x_i,precisao,iter,vet_func)
-        else:
-            Builder.get_object("resul_bier").set_text('')
-            Builder.get_object("pre_bier").set_text('')
-            Builder.get_object("n_iter_bier").set_text('')
-
-        self.plotar_2(bis_vet_resul,pf_vet_resul,nw_vet_resul,bir_vet_resul)
+            self.plotar_2(bis_vet_resul,pf_vet_resul,nw_vet_resul,bir_vet_resul)
  
 
     def bissecao(self,a,b,c,d,f):
@@ -268,36 +297,38 @@ class Handler(object):
         x0_plot = float(Builder.get_object("x0_plot").get_text())
         xi_plot = float(Builder.get_object("xi_plot").get_text())
 
+        if (x0_plot > xi_plot):
+            self.aviso_mensagem('Valor incorreto de intervalo','O valor de x inicial do plot, necessariamente deve ser menor que o outro valor de x (x máximo)','dialog-error')
 
-        sw = Builder.get_object("plot1")
+        else:
 
+            sw = Builder.get_object("plot1")
 
-        figure = Figure(figsize=(8, 6), dpi=71)
-        axis = figure.add_subplot()
-        t = np.arange(x0_plot, xi_plot, 0.001)
-        output_t=np.zeros(len(t))
-        j=0
- 
-        s = func
-        s = sympify(s)
+            figure = Figure(figsize=(8, 6), dpi=71)
+            axis = figure.add_subplot()
+            t = np.arange(x0_plot, xi_plot, 0.001)
+            output_t=np.zeros(len(t))
+            j=0
+    
+            s = func
+            s = sympify(s)
 
-        for i in t:  
-            res = s.subs(x,i)
-            output_t[j]= res
-            j+=1
+            for i in t:  
+                res = s.subs(x,i)
+                output_t[j]= res
+                j+=1
 
-        s = output_t
+            s = output_t
 
-        axis.plot(t, s)
+            axis.plot(t, s)
 
+            axis.set_xlabel('x')
+            axis.set_ylabel('y')
 
-        axis.set_xlabel('x')
-        axis.set_ylabel('y')
-
-        canvas = FigureCanvas(figure)  
-        canvas.set_size_request(800, 600)
-        sw.add(canvas)
-        sw.show_all()      
+            canvas = FigureCanvas(figure)  
+            canvas.set_size_request(800, 600)
+            sw.add(canvas)
+            sw.show_all()      
 
     def plotar_2(self,a,b,c,d):
         bis = a
@@ -305,34 +336,91 @@ class Handler(object):
         nw = c
         bir = d
 
+        bis_t = 1
+        pf_t = 1
+        nw_t = 1
+        bir_t = 1
+        hor = 2
+        i = 1
+
+        vert = 0
+
+        if len(bis) < 2: 
+            bis_t = 0
+            hor = 1
+        if len(pf) < 2:
+            pf_t = 0
+            hor = 1
+        if len(nw) < 2:
+            nw_t = 0
+            hor = 1
+        if len(bir) < 2:
+            bir_t = 0
+            hor = 1
+
         sw = Builder.get_object("plot2")
 
         figure = Figure(figsize=(8, 8), dpi=71)
 
-        x_val = np.arange(0, len(bis), 1)
-        axs = figure.add_subplot(2,2,1) #.title.set_text('Bisseccao')
-        axs.plot(x_val,bis)
+        vert = bis_t + pf_t + nw_t + bir_t
 
-        x_val = np.arange(0, len(pf), 1)
-        axs = figure.add_subplot(2,2,2) #.title.set_text('Posicao Falsa')
-        axs.plot(x_val,pf)
+        if vert == 4:
 
-        x_val = np.arange(0, len(nw), 1)
-        axs = figure.add_subplot(2,2,3) #.title.set_text('Newton Raphson')
-        axs.plot(x_val,nw)
+            x_val = np.arange(0, len(bis), 1)
+            axs = figure.add_subplot(hor,2,1) #.title.set_text('Bisseccao')
+            axs.plot(x_val,bis)
 
-        x_val = np.arange(0, len(bir), 1)
-        axs = figure.add_subplot(2,2,4) #.title.set_text('Bierge Vieta')
-        axs.plot(x_val,bir)
+            x_val = np.arange(0, len(pf), 1)
+            axs = figure.add_subplot(hor,2,2) #.title.set_text('Posicao Falsa')
+            axs.plot(x_val,pf)
+
+            x_val = np.arange(0, len(nw), 1)
+            axs = figure.add_subplot(hor,2,3) #.title.set_text('Newton Raphson')
+            axs.plot(x_val,nw)
+
+            x_val = np.arange(0, len(bir), 1)
+            axs = figure.add_subplot(hor,2,4) #.title.set_text('Bierge Vieta')
+            axs.plot(x_val,bir)
+
+        else:
+
+            i = 1
+
+            if bis_t>0:
+                x_val = np.arange(0, len(bis), 1)
+                axs = figure.add_subplot(hor,vert,i) #.title.set_text('Bisseccao')
+                axs.plot(x_val,bis)
+                i += 1
+
+            if pf_t>0:
+                x_val = np.arange(0, len(pf), 1)
+                axs = figure.add_subplot(hor,vert,i) #.title.set_text('Posicao Falsa')
+                axs.plot(x_val,pf)
+                i += 1
+
+            if nw_t>0:
+                x_val = np.arange(0, len(nw), 1)
+                axs = figure.add_subplot(hor,vert,i) #.title.set_text('Newton Raphson')
+                axs.plot(x_val,nw)
+                i += 1
+
+            if bir_t>0:
+                x_val = np.arange(0, len(bir), 1)
+                axs = figure.add_subplot(hor,vert,i) #.title.set_text('Bierge Vieta')
+                axs.plot(x_val,bir)
+                i += 1
 
 
         canvas = FigureCanvas(figure)  
-        canvas.set_size_request(800, 600)
+        
+        if vert == 3:
+            canvas.set_size_request(1200, 600)
+        else:
+            canvas.set_size_request(800, 600)
         sw.add(canvas)
         sw.show_all()  
 
 
- 
 
 Builder = Gtk.Builder()
 Builder.add_from_file("projeto_feira.glade")

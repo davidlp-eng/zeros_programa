@@ -2,8 +2,42 @@
 <!-- Generated with glade 3.38.2 -->
 <interface>
   <requires lib="gtk+" version="3.24"/>
+  <object class="GtkMessageDialog" id="aviso">
+    <property name="can-focus">False</property>
+    <property name="title" translatable="yes">Aviso</property>
+    <property name="type-hint">dialog</property>
+    <property name="message-type">warning</property>
+    <property name="buttons">ok</property>
+    <child internal-child="vbox">
+      <object class="GtkBox">
+        <property name="can-focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">2</property>
+        <child internal-child="action_area">
+          <object class="GtkButtonBox">
+            <property name="can-focus">False</property>
+            <property name="homogeneous">True</property>
+            <property name="layout-style">end</property>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
   <object class="GtkWindow" id="main_window">
     <property name="can-focus">False</property>
+    <property name="title" translatable="yes">Zeros Program</property>
+    <property name="icon-name">applications-system</property>
     <signal name="destroy" handler="on_main_window_destroy" swapped="no"/>
     <child>
       <!-- n-columns=1 n-rows=2 -->
@@ -756,15 +790,15 @@ garante uma convergência mais exata para a raiz verdadeira, podendo ser limitad
 máximo  de iterações,  ou seja, se o código não alcançar a precisão desejada mas atingir o número máximo de iterações o 
 laço cessará;
 	
-	- Para a inserção de funções trigonométricas, usar nomeclatura em inglês, por exemplo, cos(x), sin(x), tan(x);
+	- Para a inserção de funções trigonométricas, usar nomeclatura em inglês, por exemplo, cos(x), sin(x), tan(x);	   
 
-	- Selecione os métodos da Bisseção, Posição Falsa e Newton Rapson;
+	- Usando a função "Plotar" é possível plotar o gráfico da função desejada, a partir de um intervalo "x_0 e x_i"; 	    
 
-	- Sempre utilizar "x" minúsculo para o termo da função;
-
-	- É recomendado que no primeiro uso do aplicativo, seja feito o seguinte teste para aprender o uso do programa;
+	- É recomendado que no primeiro uso do aplicativo, seja feito o seguinte teste para validar o programa.
+  
+	- Selecione os métodos da Bisseção, Posição Falsa e Newton Raphson:		  
 			    
-	- f(x) = x**3 - 3*x + 9 , X_0 = 2.5,  X_i = 3.5, precisão = 1e-5;
+	- f(x) = x**2 - 3*x + 9 , X_0 = 2.5,  X_i = 3.5, precisão = 1e-5 e 100 iterações;
 
 </property>
                     <attributes>
@@ -899,6 +933,7 @@ laço cessará;
   <object class="GtkWindow" id="plot1">
     <property name="can-focus">False</property>
     <property name="title" translatable="yes">Gráfico - Feche essa janela para plotar novamente</property>
+    <property name="icon-name">applications-system</property>
     <property name="transient-for">main_window</property>
     <signal name="destroy" handler="on_plot1_destroy" swapped="no"/>
     <child>
